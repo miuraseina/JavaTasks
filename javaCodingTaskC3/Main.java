@@ -1,4 +1,4 @@
-package javaCodingTask3;
+package javaCodingTaskC3;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,7 +34,7 @@ public class Main {
 		int count = 0;
 
 		InputStream is = Main.class.getClassLoader()
-				.getResourceAsStream("javaCodingTask3/resources/受信メール.csv");
+				.getResourceAsStream("javaCodingTaskC3/resources/受信メール.csv");
 
 		if (is == null) {
 			throw new RuntimeException("CSVが見つかりません");
