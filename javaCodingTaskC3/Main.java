@@ -14,8 +14,8 @@ import java.util.List;
 public class Main {
 
 	public static void main(String[] args) {
-		
-		
+
+
 		if (args.length== 0) {
 			System.out.println("「迷惑メールを判別するワードを入力してください:」");
 			return;
