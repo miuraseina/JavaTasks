@@ -1,66 +1,55 @@
-
-
+//修正済み
 package javaCodingTaskC3;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Main {
 
 	public static void main(String[] args) {
 
 
-
-		Scanner sc = new Scanner(System.in);
-		String word = sc.nextLine();
-
-		if (word.length() == 0) {
+		if (args.length== 0) {
 			System.out.println("「迷惑メールを判別するワードを入力してください:」");
 			return;
 		}
 
-
+		String strargs = args[0];
 
 		List<String> rejectedmails = new ArrayList<>();
 		List<String> remainingMails = new ArrayList<>();
 		int count = 0;
 
-		InputStream is = Main.class.getClassLoader()
-				.getResourceAsStream("javaCodingTaskC3/resources/受信メール.csv");
+		Path path = Paths.get("resources/受信メール.csv");
 
-		if (is == null) {
+		if (!Files.exists(path)) {
 			throw new RuntimeException("CSVが見つかりません");
 		}
 
-
 		List<String> lines = new ArrayList<>();
 
-		try (BufferedReader br = new BufferedReader(
-				new InputStreamReader(is, StandardCharsets.UTF_8))) {
+		try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 
 			String line;
 			while ((line = br.readLine()) != null) {
 				lines.add(line);
 			}
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-			return;
 		}
-
 
 		// 3. CSV解析
 		boolean isFirstLine = true;
+
+
 
 
 		for (String line : lines) {
@@ -69,10 +58,18 @@ public class Main {
 				continue; // ヘッダを飛ばす
 			}
 
+			if (line.isEmpty()) {
+				continue;
+			}
+
 
 
 
 			String[] parts = line.split(",");
+
+			if (parts.length < 2) {
+				continue;
+			}
 
 
 			String title = parts[0]
@@ -84,23 +81,26 @@ public class Main {
 					.replace("]", "");
 
 
-			if (title.contains(word)||text.contains(word)) {
+
+
+
+			if (title.contains(strargs)||text.contains(strargs)) {
 				rejectedmails.add(line);
 				count ++;
-			}else
-				remainingMails.add(line);
+			}else {
+				remainingMails.add(line);}
 		}
 
 
 		String fileName = "迷惑メール.csv";
-		Path path = Paths.get("output", fileName);
+		Path paths = Paths.get("output", fileName);
 
 		try {
 			// outputディレクトリが無ければ作成
-			Files.createDirectories(path.getParent());
+			Files.createDirectories(paths.getParent());
 
 			try (BufferedWriter writer =
-					Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+					Files.newBufferedWriter(paths, StandardCharsets.UTF_8)) {
 
 				// ヘッダー
 				writer.write("{title},{text}");
@@ -148,5 +148,3 @@ public class Main {
 	}
 
 }
-
-
