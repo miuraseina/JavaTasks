@@ -50,16 +50,26 @@ public class Main {
 		boolean isFirstLine = true;
 
 
+
+
 		for (String line : lines) {
 			if (isFirstLine) {
 				isFirstLine = false;
 				continue; // ヘッダを飛ばす
 			}
 
+			if (line.isEmpty()) {
+				continue;
+			}
+
 
 
 
 			String[] parts = line.split(",");
+
+			if (parts.length < 2) {
+				continue;
+			}
 
 
 			String title = parts[0]
