@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -18,12 +17,15 @@ public class Main {
 
 	public static void main(String[] args) {
 		// 1. 日付入力チェック
-		Scanner sc = new Scanner(System.in);
+		Scanner sc = new Scanner(System.in);		
 		System.out.println("日付を指定してください");
+
 		String input = sc.nextLine();
 
 		DateTimeFormatter inputFormatter =
 				DateTimeFormatter.ofPattern("yyyyMMdd");
+
+		sc.close();
 
 
 
@@ -42,29 +44,78 @@ public class Main {
 			return;
 		}
 
-		// 2. CSV 読み込み
+
+		// 2. CSV 読み込み ＋ 3. CSV解析（逐次処理）
 		InputStream is = Main.class.getClassLoader()
 				.getResourceAsStream("javaCodingTaskC2/resources/購入履歴.csv");
-
 
 		if (is == null) {
 			throw new RuntimeException("CSVが見つかりません");
 		}
 
-		List<String> lines = new ArrayList<>();
+		DateTimeFormatter csvFormatter =
+				DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+		LocalDate targetDay = null;
+		List<Integer> amounts = null;
+		boolean found = false;
 
 		try (BufferedReader br = new BufferedReader(
 				new InputStreamReader(is, StandardCharsets.UTF_8))) {
-			/*
-linesにはlines = ["2024/07/01,[4567, 1234, 987, 5432, 6789]","2024/07/11,[8765, 3456, 1234, 9876, 2345]",
-  ...
-];
-,区切りで一行でなっている
 
-			 */
 			String line;
+			boolean isFirstLine = true; // ヘッダ対策
+
 			while ((line = br.readLine()) != null) {
-				lines.add(line);
+
+				/*
+				for (String line : lines)一行ずつ処理
+				ヘッダーがある一行目を飛ばす→これをしないとDateTimeParseExceptionになった
+				1回目line = "2024/07/01,[4567, 1234, 987, 5432, 6789]"
+				 */
+
+
+				if (isFirstLine) {
+					isFirstLine = false;
+					continue;
+				}
+
+				// 空行対策
+				if (line.isEmpty()) {
+					continue;
+				}
+
+
+				// 「day,amount」を2つに分ける
+				/*
+					split(",", 2) を使うと
+					parts[0] = "2024/07/01"
+					parts[1] = "[4567, 1234, 987, 5432, 6789]"
+				 */
+
+				String[] parts = line.split(",", 2);
+				if (parts.length < 2) {
+					continue;
+				}
+
+				LocalDate day = LocalDate.parse(parts[0], csvFormatter);
+
+				if (day.equals(inputDate)) {
+					found = true;
+					targetDay = day;
+
+					// amount 部分の解析
+					String amountPart = parts[1]
+							.replace("[", "")
+							.replace("]", "");
+
+					amounts = Arrays.stream(amountPart.split(","))
+							.map(String::trim)
+							.map(Integer::parseInt)
+							.collect(Collectors.toList());
+
+					break; // 見つかったら即終了
+				}
 			}
 
 		} catch (Exception e) {
@@ -72,63 +123,10 @@ linesにはlines = ["2024/07/01,[4567, 1234, 987, 5432, 6789]","2024/07/11,[8765
 			return;
 		}
 
-
-		// 3. CSV解析
-		DateTimeFormatter csvFormatter =
-				DateTimeFormatter.ofPattern("yyyy/MM/dd");
-
-
-		LocalDate targetDay =  null;
-		List<Integer> amounts = null;
-		boolean found = false;
-		boolean isFirstLine = true;
-
-		/*
-		for (String line : lines)一行ずつ処理
-		ヘッダーがある一行目を飛ばす→これをしないとDateTimeParseExceptionになった
-		1回目line = "2024/07/01,[4567, 1234, 987, 5432, 6789]"
-		 */
-
-
-		for (String line : lines) {
-			if (isFirstLine) {
-				isFirstLine = false;
-				continue; // ヘッダを飛ばす
-			}
-
-
-
-			// 「day,amount」を2つに分ける
-			/*
-		split(",", 2) を使うと
-		parts[0] = "2024/07/01"
-		parts[1] = "[4567, 1234, 987, 5432, 6789]"
-			 */
-			String[] parts = line.split(",", 2);
-			LocalDate day = LocalDate.parse(parts[0], csvFormatter);
-
-			if (day.equals(inputDate)) {
-				found = true;
-				targetDay = day;
-
-				//amount 部分から [ ] を消す
-				String amountPart = parts[1]
-						.replace("[", "")
-						.replace("]", "");
-
-				amounts = Arrays.stream(amountPart.split(","))//"4567, 1234, 987" →["4567", " 1234", " 987"]
-						.map(String::trim)//" 1234" → "1234"
-						.map(Integer::parseInt)//"1234" → 1234文字列 → 数値
-						.collect(Collectors.toList());//List<Integer> = [4567, 1234, 987, 5432, 6789]
-				break;
-			}
-		}
-
 		if (!found) {
 			System.out.println("購入履歴が存在しません");
 			return;
 		}
-
 		// 4. 合計計算
 		int totalAmount = amounts.stream()
 				.mapToInt(Integer::intValue)
@@ -136,22 +134,21 @@ linesにはlines = ["2024/07/01,[4567, 1234, 987, 5432, 6789]","2024/07/11,[8765
 
 		String dayStr = String.valueOf(targetDay.getDayOfMonth());
 
+		final double RATE_POINT_THREE = 0.03; 
+		final double RATE_POINT_FIVE = 0.05; 
+		final double RATE_POINT_ONE = 0.01;
+
 		int point;
 		if (dayStr.contains("3")) {
-			point = (int)(totalAmount * 0.03);
+			point = (int)(totalAmount *  RATE_POINT_THREE);
 		} else if (dayStr.contains("5")) {
-			point = (int)(totalAmount * 0.05);
+			point = (int)(totalAmount * RATE_POINT_FIVE);
 		} else {
-			point = (int)(totalAmount * 0.01);
+			point = (int)(totalAmount * RATE_POINT_ONE);
 		}
 		System.out.println(point);
-
-
-
-
 
 
 	}
 
 }
-
