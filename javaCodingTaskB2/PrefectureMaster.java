@@ -49,7 +49,7 @@ public class PrefectureMaster {
 				}
 
 				String[] column = line.split(",");
-				if (column.length < 3) {
+				if (column.length < 2) {
 					continue;
 				}
 
@@ -65,7 +65,7 @@ public class PrefectureMaster {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("prefectureCsvを読み込む際にエラーが発生しました");
 		}
 
 		try (BufferedReader br =
@@ -88,7 +88,7 @@ public class PrefectureMaster {
 				}
 
 				String[] column = line.split(",");
-				if (column.length < 3) {
+				if (column.length < 2) {
 					continue;
 				}
 
@@ -104,7 +104,7 @@ public class PrefectureMaster {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("capitalsCsvを読み込む際にエラーが発生しました");
 		}
 
 
@@ -118,21 +118,41 @@ public class PrefectureMaster {
 
 				// ヘッダー
 				writer.write("ID,Prefecture,Capital_City");
-				writer.newLine();//改行
+				writer.newLine();
 
-				// データ行
-				for (Map.Entry<Integer, String> entry : PrefectureMaster.entrySet()) {
-		            // getKey() は Integer 型なので int に変換可能
-		            int id = entry.getKey(); // オートアンボクシング
+				// PrefectureMap を1件ずつ処理
+				for (Map.Entry<Integer, Prefecture> entry : prefectureMap.entrySet()) {
 
-		        }
-				
+					int id = entry.getKey();
+					Prefecture prefecture = entry.getValue();
 
-			}
+					// 県庁所在地を取得
+					Capital capital =
+							capitalMap.get(prefecture.getCapitalCityId());
 
+					if (capital != null) {
+
+						String line =
+								id + "," +
+										prefecture.getName() + "," +
+										capital.getCapitalName() + "\n";
+
+						writer.write(line);
+					}
+				}
+
+
+			} 
+		}catch (Exception e) {
+			System.out.println("都道府県情報CSVの出力でエラーが発生しました");
+			e.printStackTrace();
+			return;
 
 		}
 
+		System.out.println("都道府県情報.csv ファイルが作成されました");
+
+
 
 	}
-	}
+}
