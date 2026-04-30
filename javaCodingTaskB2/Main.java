@@ -1,4 +1,4 @@
-
+//プルリクエストを送信
 package javaCodingTaskB2;
 
 public class Main {
