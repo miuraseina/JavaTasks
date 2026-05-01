@@ -1,3 +1,4 @@
+//プルリクエストを送信
 package javaCodingTaskB2;
 
 
@@ -18,8 +19,8 @@ public class Capital {
 		return capitalId;
 	}
 
-	public String getcapitalName() {
-		return capitalName;
+	public String getCapitalName() {
+	    return capitalName;
 	}
 
 }
