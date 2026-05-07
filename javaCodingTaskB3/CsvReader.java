@@ -1,3 +1,4 @@
+//プルリクエストの送信
 package javaCodingTaskB3;
 
 import java.io.BufferedReader;
