@@ -8,7 +8,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		System.out.println("給与基準額を入力してください");
+		System.out.println("給与基準額を入力してください。");
 		try (Scanner sc = new Scanner(System.in)) {
 			int payrollStandardAmount = sc.nextInt();
 
