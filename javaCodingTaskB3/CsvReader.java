@@ -1,4 +1,4 @@
-//プルリクエストの送信
+//PRの送信
 package javaCodingTaskB3;
 
 import java.io.BufferedReader;
@@ -62,7 +62,7 @@ public class CsvReader {
 
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException("読み込み時にエラーが起きました");
 		}
 
 		return employees;//戻り値

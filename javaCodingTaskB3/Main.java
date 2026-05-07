@@ -1,4 +1,4 @@
-//プルリクエストの送信
+//PRの送信
 package javaCodingTaskB3;
 
 import java.util.List;
@@ -25,8 +25,10 @@ public class Main {
 			for (Employee emp : result) {
 				System.out.println(emp);
 			}
+
+
 		} catch (NumberFormatException e) {
-			e.printStackTrace();
+			throw new RuntimeException("数字を入力してください");
 		}
 
 	}

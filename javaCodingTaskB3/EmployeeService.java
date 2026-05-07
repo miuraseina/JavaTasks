@@ -1,4 +1,4 @@
-//プルリクエストの送信
+//PRの送信
 package javaCodingTaskB3;
 
 import java.util.ArrayList;
