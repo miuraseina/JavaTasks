@@ -19,10 +19,8 @@ public class CsvReader {
 		Path path = Paths.get("resources/社員.csv");
 
 		if (!Files.exists(path)) {
-			throw new RuntimeException("CSVが見つかりません。");
+			throw new RuntimeException("CSVが見つかりません");
 		}
-
-
 
 
 		List<Employee> employees = new ArrayList<>();
