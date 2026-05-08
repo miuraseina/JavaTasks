@@ -1,3 +1,4 @@
+//PRの送信
 package javaCodingTaskB3;
 
 import java.io.BufferedReader;
@@ -20,8 +21,6 @@ public class CsvReader {
 		if (!Files.exists(path)) {
 			throw new RuntimeException("CSVが見つかりません");
 		}
-
-
 
 
 		List<Employee> employees = new ArrayList<>();
@@ -63,7 +62,7 @@ public class CsvReader {
 
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException("読み込み時にエラーが起きました");
 		}
 
 		return employees;//戻り値
@@ -71,6 +70,7 @@ public class CsvReader {
 
 	}
 }
+
 
 
 

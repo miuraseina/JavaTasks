@@ -1,3 +1,4 @@
+//PRの送信
 package javaCodingTaskB3;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public class Main {
 		try (Scanner sc = new Scanner(System.in)) {
 			int payrollStandardAmount = sc.nextInt();
 
+			sc.close();
+
 
 			CsvReader reader = new CsvReader();
 			List<Employee> employees = reader.readCsv();
@@ -22,10 +25,13 @@ public class Main {
 			for (Employee emp : result) {
 				System.out.println(emp);
 			}
+
+
 		} catch (NumberFormatException e) {
-			e.printStackTrace();
+			throw new RuntimeException("数字を入力してください");
 		}
 
 	}
 
 }
+
