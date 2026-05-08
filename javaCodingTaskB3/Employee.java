@@ -18,6 +18,7 @@ public class Employee {
 
 
 	public Employee(int id, String name, String department, int age, int salary) {
+		
 		this.id = id;// ←「値を代入している」フィールド   引数
 
 		this.name = name;
