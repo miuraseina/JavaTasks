@@ -1,6 +1,8 @@
 //入力のwebサイト運営日数、キャンペーン実施日数、訪問者リストをもとに、
 //平均訪問者数が最大となる連続する日数がいくつ存在するかと、
 //その候補期間の中で最も早く始まる日を導出する。
+
+//プルリクエストを送る
 package javaCodingTaskB1;
 
 public class Main {
@@ -17,6 +19,25 @@ public class Main {
 			visitNumList[i] = Integer.parseInt(args[i + 2]);			//訪問者数リスト i[ + args[2] ]
 		}
 
+		StartDateDerivationProcess process = new StartDateDerivationProcess();
+
+
+		int[] result = process.consistencyAdjustment(
+				websiteManagementDays,
+				campaignImplementationDays,
+				visitNumList
+				);
+
+		// 出力
+		System.out.println(result[0]); // 候補期間数
+		System.out.println(result[1]); // 開始日
+	}
+
+
+}
+
+
+
 
 		/*
 		 * 
@@ -32,42 +53,69 @@ public class Main {
 
 
 
-		int maxVisitorCountSum = 0;		//最大訪問者数合計
-		int candidatePeriodNumber = 1;	//候補期間数
-		int campaignStartDate = 1;		//キャンペーン開始日
+/*
 
-		int visitorCountSum = 0;		//訪問者数合計
+### 具体例の設定
+*   **運営日数**: 5日間
+*   **キャンペーン実施日数**: 3日間
+*   **訪問者リスト**: `[10, 20, 30, 20, 10]`
+
+---
+
+### ステップ1：変数の初期化
+*   `{最大訪問者数合計}` = 0
+*   `{候補期間数}` = 1
+*   `{キャンペーン開始日}` = 1
+*   `{訪問者数合計}` = 0
+
+### ステップ2・3：最初の期間（1日目〜3日目）を計算
+キャンペーン開始を「1日目」と仮定して、最初の3日間の合計を出します。
+
+*   10 + 20 + 30 = **60**
+*   `{訪問者数合計}` = 60
+*   `{最大訪問者数合計}` = 60 （ステップ3で更新）
+
+---
+
+### ステップ4：ウィンドウを1日ずつずらすループ
+ここからがスライディングウィンドウ方式です。全体の運営日数（5）- 実施日数（3）＝ 2回ループします。
+
+#### 【ループ1回目】（2日目〜4日目 の期間をチェック）
+計算式（4-1）を使って、前の合計から「はみ出た分」を引き「新しく入った分」を足します。
+*   前の合計(60) - 1日目の値(10) + 4日目の値(20) = **70**
+*   `{訪問者数合計}` = **70**
+
+判定：
+*   70（今） > 60（最大） なので、**ステップ4-2**が発動！
+*   `{最大訪問者数合計}` = 70
+*   `{候補期間数}` = 1 （リセット）
+*   `{キャンペーン開始日}` = **2** （ループカウンタ1+1）
+
+#### 【ループ2回目】（3日目〜5日目 の期間をチェック）
+*   前の合計(70) - 2日目の値(20) + 5日目の値(10) = **60**
+*   `{訪問者数合計}` = **60**
+
+判定：
+*   60（今） < 70（最大） なので、**ステップ4-4**（何もしない）。
+
+---
+
+### ステップ5：結果を返却
+*   `{候補期間数}`：**1**
+*   `{キャンペーン開始日}`：**2**
+
+最終的に、**「2日目から始めるのが一番多く、そのパターンは1つだけ」**という答えが出ます。
+
+---
+
+### もし「同じ最大値」があったら？（ステップ4-3の動き）
+例えばリストが `[10, 20, 10, 20]` で2日間のキャンペーンなら：
+1.  「1-2日目」の合計は **30**（暫定最大）
+2.  「2-3日目」の合計は **30**（最大と同じ！） → **候補期間数を+1して「2」にする**
+3.  「3-4日目」の合計は **30**（最大と同じ！） → **候補期間数を+1して「3」にする**
+
+このように、**「同じ最大値を見つけるたびにカウントを増やし、開始日は最初に最大を見つけた日のままにする」**という動きになります。
 
 
-		for (int i = 0; i < campaignImplementationDays; i++) {
-			visitorCountSum += visitNumList[i];
-		}
-		maxVisitorCountSum = visitorCountSum;
 
-
-		for (int i = 1; i <= websiteManagementDays - campaignImplementationDays; i++) {
-
-			// 左端を引いて右端を足す
-			visitorCountSum
-			= visitorCountSum
-			- visitNumList[i - 1]
-					+ visitNumList[i + campaignImplementationDays - 1];
-
-			if (visitorCountSum > maxVisitorCountSum) {
-				maxVisitorCountSum = visitorCountSum;
-				candidatePeriodNumber = 1;
-				campaignStartDate = i + 1; // 開始日は1日目基準
-			} else if (visitorCountSum == maxVisitorCountSum) {
-				candidatePeriodNumber++;
-			}
-		}
-
-
-		System.out.println(candidatePeriodNumber);
-		System.out.println(campaignStartDate);
-	}
-}
-
-
-
-
+*/
